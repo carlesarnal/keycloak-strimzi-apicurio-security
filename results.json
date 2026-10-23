@@ -1,0 +1,10 @@
+{
+  "invalid_token_http": 401,
+  "readonly_lookup": "passed",
+  "readonly_mutation_http": 403,
+  "accepted_content_unchanged": true,
+  "rejected_version_absent": true,
+  "kafka_publisher": "record observed",
+  "kafka_reader": "TopicAuthorizationException; record absent",
+  "boundary": "real OAuth/ACL integration in Compose; internal admin listener and plaintext are lab-only; Kubernetes/TLS not established"
+}

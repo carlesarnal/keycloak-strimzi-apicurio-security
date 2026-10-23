@@ -1,15 +1,21 @@
 # One Keycloak Realm, Separate Trust Boundaries: Securing Kafka and Its Schema Registry
 
-A Kafka producer using a Registry-aware serializer makes at least two kinds of request: it talks to the broker and resolves schema material from Registry. Those requests have different audiences, permissions and failure modes. One Keycloak realm can simplify identity administration without making every token valid for every resource.
+Real Keycloak 26.0, Registry 3.3.3 and Strimzi Kafka OAuth integration passed. Invalid token: 401. Read-only schema lookup: success. Read-only mutation: 403, accepted content unchanged, new version absent. Authorized Kafka producer observed in broker; reader got TopicAuthorizationException and its record was absent.
 
-## Current talk entry point
+## Run
 
 ```sh
-Review talk/authorization-matrix.md; cluster tests remain pending
+python3 verify.py
 ```
 
-Authorization matrix prepared. Kubernetes API unavailable; no fresh token/ACL/registry-denial integration run. Existing manifests are unverified scaffolding, not a production security recipe.
+## Evidence and boundaries
 
-Start with [PRESENTATION_GUIDE.md](PRESENTATION_GUIDE.md), open `presentation.html`, and inspect [EVIDENCE.md](EVIDENCE.md) and [VERIFICATION.md](VERIFICATION.md). The prior repository overview is retained in `docs/historical-readme.md` as historical context, not a verified recipe for this talk.
+Compose integration uses Strimzi Kafka image 0.45.0/Kafka 3.9.0 and OAuth libraries, not a Strimzi operator deployment. Plaintext and an internal anonymous admin listener are deliberate lab fixtures. Tokens and real credentials are not recorded. Fixed local-lab credentials are disposable. TLS, rotation and Kubernetes routing are not established by this test.
 
-The executable material and documentation distinguish observed behavior from design guidance. License: Apache-2.0.
+Observed machine-readable results: [results.json](results.json).
+
+All containers/processes created by the runner are cleaned up on normal completion and handled failures. An externally killed process may need the explicit Compose cleanup command. Use only disposable local test resources.
+
+## Present
+
+Open `presentation.html`; arrows/Page keys navigate and N toggles notes. Use `PRESENTATION_GUIDE.md` for timing and the actual commands.

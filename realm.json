@@ -1,0 +1,15 @@
+{
+  "realm": "lab", "enabled": true,
+  "roles": {"realm": [{"name":"sr-admin"},{"name":"sr-readonly"}]},
+  "clients": [
+    {"clientId":"publisher","secret":"local-lab-publisher","enabled":true,"serviceAccountsEnabled":true,
+     "protocolMappers":[{"name":"registry-audience","protocol":"openid-connect","protocolMapper":"oidc-audience-mapper","config":{"included.client.audience":"registry","access.token.claim":"true"}}]},
+    {"clientId":"reader","secret":"local-lab-reader","enabled":true,"serviceAccountsEnabled":true,
+     "protocolMappers":[{"name":"registry-audience","protocol":"openid-connect","protocolMapper":"oidc-audience-mapper","config":{"included.client.audience":"registry","access.token.claim":"true"}}]},
+    {"clientId":"registry","enabled":true,"bearerOnly":true}
+  ],
+  "users": [
+    {"username":"service-account-publisher","enabled":true,"serviceAccountClientId":"publisher","realmRoles":["sr-admin"]},
+    {"username":"service-account-reader","enabled":true,"serviceAccountClientId":"reader","realmRoles":["sr-readonly"]}
+  ]
+}

@@ -2,63 +2,38 @@
 
 One Keycloak Realm, Separate Trust Boundaries: Securing Kafka and Its Schema Registry
 
-## Audience and central claim
+## 0:00 — The serializer and broker have separate permission paths
 
-A Kafka producer using a Registry-aware serializer makes at least two kinds of request: it talks to the broker and resolves schema material from Registry. Those requests have different audiences, permissions and failure modes. One Keycloak realm can simplify identity administration without making every token valid for every resource.
+Use the corresponding assertion or result record, explain what changes, and ask which boundary the observation proves.
 
-## 30-minute run of show
+## 4:00 — A token can be valid and an operation forbidden
 
-### 0:00 — One identity provider, separate decisions
+Use the corresponding assertion or result record, explain what changes, and ask which boundary the observation proves.
 
-Say: A Kafka producer using a Registry-aware serializer makes at least two kinds of request: it talks to the broker and resolves schema material from Registry. Those requests have different audiences, permissions and failure modes. One Keycloak realm can simplify identity administration without making every token valid for every resource.
+## 9:00 — Read-only means lookup succeeds and mutation fails
 
-Show the corresponding diagram, source record or actual command output. Pause to identify the observation that supports the claim.
+Use the corresponding assertion or result record, explain what changes, and ask which boundary the observation proves.
 
-### 4:00 — Serializer lookup versus broker produce
+## 15:00 — Verify the broker record, not just a log message
 
-Say: Use three cases: an invalid token, a valid identity lacking Kafka WRITE permission, and a valid read-only identity attempting a Registry mutation. Pair each with a successful control so a broken network or unavailable service cannot masquerade as authorization enforcement. For the denied mutation, inspect the artifact afterward to establish that content was unchanged.
+Use the corresponding assertion or result record, explain what changes, and ask which boundary the observation proves.
 
-Show the corresponding diagram, source record or actual command output. Pause to identify the observation that supports the claim.
+## 21:00 — An outdated auth flag left the negative control open
 
-### 9:00 — Invalid token
+Use the corresponding assertion or result record, explain what changes, and ask which boundary the observation proves.
 
-Say: Record issuer and audience expectations, mapped principal, operation and denial details; never publish live tokens. Registry role mapping is not the same thing as a Kafka ACL. Expiry and signing-key refresh add operational concerns, while TLS protects transport rather than replacing authorization decisions.
+## 26:00 — Questions and buffer
 
-Show the corresponding diagram, source record or actual command output. Pause to identify the observation that supports the claim.
+Compose integration uses Strimzi Kafka image 0.45.0/Kafka 3.9.0 and OAuth libraries, not a Strimzi operator deployment. Plaintext and an internal anonymous admin listener are deliberate lab fixtures. Tokens and real credentials are not recorded. Fixed local-lab credentials are disposable. TLS, rotation and Kubernetes routing are not established by this test.
 
-### 15:00 — Valid identity, denied operation
-
-Say: The repository contains historical Kubernetes scaffolding and the new diagnostic matrix. Its service accounts, actual ACL commands and Registry permission mapping still require end-to-end verification. The local cluster was unavailable in this preparation run. This draft therefore explains a testing method and does not advertise a verified zero-trust deployment.
-
-Show the corresponding diagram, source record or actual command output. Pause to identify the observation that supports the claim.
-
-### 21:00 — Successful controls and unchanged state
-
-Say: Use the evidence boundary to choose the next action.
-
-Show the corresponding diagram, source record or actual command output. Pause to identify the observation that supports the claim.
-
-### 26:00 — Questions and buffer
-
-Ask what the demonstration establishes and what it leaves open. Do not add another feature if time is short.
-
-## Setup and fallback
+## Commands
 
 ```sh
-Review talk/authorization-matrix.md; cluster tests remain pending
+python3 verify.py
 ```
 
-Authorization matrix prepared. Kubernetes API unavailable; no fresh token/ACL/registry-denial integration run. Existing manifests are unverified scaffolding, not a production security recipe.
+## Observed result
 
-Prebuild/download dependencies. Keep a recording of an actual successful run; if unavailable, use the documented walkthrough and say it is not live execution. Never substitute fabricated success output.
+Real Keycloak 26.0, Registry 3.3.3 and Strimzi Kafka OAuth integration passed. Invalid token: 401. Read-only schema lookup: success. Read-only mutation: 403, accepted content unchanged, new version absent. Authorized Kafka producer observed in broker; reader got TopicAuthorizationException and its record was absent.
 
-## Questions to prepare
-
-- What is the simplest alternative?
-- Which failure was actually exercised?
-- Which guarantee belongs to the application rather than the infrastructure?
-- Which result changes with versions or workload?
-
-## 25-minute adaptation
-
-Use one central trace, shorten setup and reserve three minutes for questions. Move the secondary implementation example to backup.
+For 25 minutes, shorten setup and keep one trace plus the failure result. A backup recording must show a real run, not synthetic output.

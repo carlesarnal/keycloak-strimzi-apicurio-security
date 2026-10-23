@@ -1,17 +1,9 @@
-# Verification ledger
+# Verification — October 23, 2026
 
-Prepared October 23, 2026.
-
-Authorization matrix prepared. Kubernetes API unavailable; no fresh token/ACL/registry-denial integration run. Existing manifests are unverified scaffolding, not a production security recipe.
-
-## Reproduce
+Real Keycloak 26.0, Registry 3.3.3 and Strimzi Kafka OAuth integration passed. Invalid token: 401. Read-only schema lookup: success. Read-only mutation: 403, accepted content unchanged, new version absent. Authorized Kafka producer observed in broker; reader got TopicAuthorizationException and its record was absent.
 
 ```sh
-Review talk/authorization-matrix.md; cluster tests remain pending
+python3 verify.py
 ```
 
-A documentation or model check is not an integration test. New results must record source revision, runtime versions, command, observed outcome and remaining limits. No acceptance score is guaranteed.
-
-## Package checks
-
-Offline deck navigation/layout and documentation links are checked separately from application behavior. No claim of a five-star speaking performance is made by these artifacts.
+Compose integration uses Strimzi Kafka image 0.45.0/Kafka 3.9.0 and OAuth libraries, not a Strimzi operator deployment. Plaintext and an internal anonymous admin listener are deliberate lab fixtures. Tokens and real credentials are not recorded. Fixed local-lab credentials are disposable. TLS, rotation and Kubernetes routing are not established by this test.

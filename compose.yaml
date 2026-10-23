@@ -1,0 +1,28 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: [start-dev, --import-realm]
+    volumes: ["./realm.json:/opt/keycloak/data/import/realm.json:ro"]
+    ports: ["127.0.0.1:18230:8080"]
+  registry:
+    image: quay.io/apicurio/apicurio-registry:3.3.3
+    environment:
+      QUARKUS_OIDC_TENANT_ENABLED: "true"
+      QUARKUS_OIDC_AUTH_SERVER_URL: http://keycloak:8080/realms/lab
+      QUARKUS_OIDC_CLIENT_ID: registry
+      QUARKUS_OIDC_TOKEN_ISSUER: http://localhost:18230/realms/lab
+      QUARKUS_OIDC_TOKEN_AUDIENCE: registry
+      APICURIO_AUTH_ROLE_BASED_AUTHORIZATION: "true"
+      APICURIO_REST_DELETION_GROUP_ENABLED: "true"
+    ports: ["127.0.0.1:18231:8080"]
+  kafka:
+    image: quay.io/strimzi/kafka:0.45.0-kafka-3.9.0
+    environment:
+      LOG_DIR: /tmp/logs
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        export CLASSPATH='/opt/kafka/libs/*'
+        /opt/kafka/bin/kafka-storage.sh format -t MkU3OEVBNTcwNTJENDM2Qk -c /opt/lab/server.properties --ignore-formatted
+        exec /opt/kafka/bin/kafka-server-start.sh /opt/lab/server.properties
+    volumes: ["./server.properties:/opt/lab/server.properties:ro", "./clients:/opt/lab/clients:ro"]
