@@ -1,50 +1,15 @@
-# Keycloak + Strimzi + Apicurio Registry Security Demo
+# One Keycloak Realm, Separate Trust Boundaries: Securing Kafka and Its Schema Registry
 
-Demonstrates unified, zero-trust security for a data platform using Keycloak (OAuth2/OIDC), Strimzi (Kafka on Kubernetes), and Apicurio Registry (CNCF sandbox).
+A Kafka producer using a Registry-aware serializer makes at least two kinds of request: it talks to the broker and resolves schema material from Registry. Those requests have different audiences, permissions and failure modes. One Keycloak realm can simplify identity administration without making every token valid for every resource.
 
-## Quick Start (Kubernetes)
+## Current talk entry point
 
-```bash
-# Install Strimzi operator first
-kubectl apply -f https://strimzi.io/install/latest?namespace=security-demo
-
-# Deploy all components
-kubectl apply -f k8s/01-namespace.yaml
-kubectl apply -f k8s/02-keycloak.yaml
-kubectl wait --for=condition=Available deployment/keycloak -n security-demo --timeout=120s
-
-# Configure Keycloak realm and clients
-kubectl port-forward svc/keycloak 8080:8080 -n security-demo &
-./scripts/01-setup-keycloak.sh
-
-# Deploy Kafka with OAuth2 and Registry with OIDC
-kubectl apply -f k8s/03-kafka-oauth.yaml
-kubectl apply -f k8s/04-apicurio-registry-oidc.yaml
-
-# Run the auth demo
-kubectl port-forward svc/apicurio-registry 8081:8080 -n security-demo &
-./scripts/02-demo-auth.sh
+```sh
+Review talk/authorization-matrix.md; cluster tests remain pending
 ```
 
-## Components
+Authorization matrix prepared. Kubernetes API unavailable; no fresh token/ACL/registry-denial integration run. Existing manifests are unverified scaffolding, not a production security recipe.
 
-| Manifest | Component | Purpose |
-|---|---|---|
-| `k8s/01-namespace.yaml` | Namespace | `security-demo` namespace |
-| `k8s/02-keycloak.yaml` | Keycloak | Central identity provider (OAuth2/OIDC) |
-| `k8s/03-kafka-oauth.yaml` | Strimzi Kafka | Kafka cluster with OAuth2 listener + ACL authorization |
-| `k8s/04-apicurio-registry-oidc.yaml` | Apicurio Registry | Schema registry with OIDC authentication |
+Start with [PRESENTATION_GUIDE.md](PRESENTATION_GUIDE.md), open `presentation.html`, and inspect [EVIDENCE.md](EVIDENCE.md) and [VERIFICATION.md](VERIFICATION.md). The prior repository overview is retained in `docs/historical-readme.md` as historical context, not a verified recipe for this talk.
 
-## Scripts
-
-| Script | Purpose |
-|---|---|
-| `01-setup-keycloak.sh` | Create realm, clients (broker, producer, consumer, registry) |
-| `02-demo-auth.sh` | Demonstrate token acquisition, JWT inspection, auth enforcement |
-
-## Architecture
-
-- **Keycloak** provides OAuth2/OIDC tokens for all components
-- **Kafka** validates tokens via JWKS endpoint, maps to principals for ACL authorization
-- **Apicurio Registry** uses the same OIDC realm for authentication
-- One identity, one realm, one security model for the entire platform
+The executable material and documentation distinguish observed behavior from design guidance. License: Apache-2.0.

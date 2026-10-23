@@ -28,8 +28,8 @@ curl -s -X POST "$KEYCLOAK_URL/admin/realms" \
 # Create clients
 for client_config in \
   '{"clientId":"kafka-broker","secret":"kafka-broker-secret","serviceAccountsEnabled":true,"directAccessGrantsEnabled":true}' \
-  '{"clientId":"kafka-producer","secret":"producer-secret","serviceAccountsEnabled":false,"directAccessGrantsEnabled":true}' \
-  '{"clientId":"kafka-consumer","secret":"consumer-secret","serviceAccountsEnabled":false,"directAccessGrantsEnabled":true}' \
+  '{"clientId":"kafka-producer","secret":"producer-secret","serviceAccountsEnabled":true,"directAccessGrantsEnabled":false}' \
+  '{"clientId":"kafka-consumer","secret":"consumer-secret","serviceAccountsEnabled":true,"directAccessGrantsEnabled":false}' \
   '{"clientId":"apicurio-registry","secret":"registry-secret","serviceAccountsEnabled":true,"directAccessGrantsEnabled":true}'
 do
   CLIENT_ID=$(echo "$client_config" | jq -r '.clientId')
